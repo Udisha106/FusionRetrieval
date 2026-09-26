@@ -2,9 +2,10 @@
 __pycache__/
 *.py[cod]
 
-# Virtual environment
+# Virtual environments
 .venv/
 venv/
+env/
 
 # IDE
 .idea/
@@ -13,3 +14,7 @@ venv/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
