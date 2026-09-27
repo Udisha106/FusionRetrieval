@@ -16,6 +16,12 @@ class RetrievalPipeline:
 )
 
         self.dense = DenseRetriever(embedding_model)
+
+        self.dense.index(
+             documents,
+             batch_size=64
+            )
+
         self.bm25 = BM25Retriever(documents)
         self.fusion = RRFFusion()
         self.reranker = Reranker()
