@@ -60,12 +60,16 @@ class EvolutionGraph:
     def get_lineage(self, chunk_id, commit_hash):
         start_node = chunk_id + "@" + commit_hash[:8]
         lineage = [start_node]
+        visited = {start_node}
         current = start_node
         while True:
             successors = list(self.graph.successors(current))
             if not successors:
                 break
             current = successors[0]
+            if current in visited:
+                break
+            visited.add(current)
             lineage.append(current)
         return lineage
 

@@ -87,7 +87,31 @@ if st.button("Search") and query.strip():
         with st.expander(f"#{rank}  {chunk['file_path']}  →  {chunk.get('function_name', '')}", expanded=(rank <= 3)):
             st.code(chunk["code"], language=chunk.get("language", "python"))
             st.markdown(f"**Score:** {result.get('score', 'N/A')}")
+    st.subheader("Evolution (Simulated Version History)")
+    st.caption("Demo uses simulated commit history to illustrate versioning; the underlying pipeline works identically on real multi-commit repos (see src/versioning/).")
 
+    from src.versioning.lineage import LineageTracker
+
+    top_chunk_idx = results[0]["index"]
+    top_chunk = chunks[top_chunk_idx]
+
+    chunks_v1 = [dict(c) for c in chunks]
+    chunks_v2 = [dict(c) for c in chunks]
+    chunks_v2[top_chunk_idx]["content_hash"] = "SIMULATED_NEW_HASH_DEMO"
+
+    tracker = LineageTracker(repo_path=".")
+    tracker.build_from_chunk_snapshots([
+        ("aaaaaaaa1111", chunks_v1),
+        ("bbbbbbbb2222", chunks_v2),
+    ])
+
+    lineage = tracker.get_full_lineage(top_chunk["chunk_id"], "bbbbbbbb2222")
+
+    lineage_display = " → ".join(
+        f"**{entry['label'].upper()}**" if entry["label"] == "current" else entry["label"]
+        for entry in reversed(lineage)
+    )
+    st.markdown(f"Lineage for `{top_chunk['function_name']}`: {lineage_display}")
     st.subheader("Performance")
     total_latency = sum(timings.values())
 
