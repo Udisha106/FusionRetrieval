@@ -7,6 +7,13 @@ identifier-like tokens can we pull out or guess (identifiers).
 
 This is rule-based on purpose — no model call, so it's instant and has zero
 failure modes. It's the foundation the other modules build on.
+
+FIX (see demo screenshot bug): the PascalCase check used to match ANY word
+starting with a capital letter followed by a lowercase letter -- e.g. "How"
+at the start of a sentence -- and wrongly treated it as a real identifier
+fragment. Real PascalCase identifiers (like "SessionCreated") have a SECOND
+capital letter later in the word; plain capitalized English words don't.
+The fix requires that second capital before treating a token as PascalCase.
 """
 
 import re
@@ -49,6 +56,14 @@ TECHNICAL_ENTITIES = {
     "api", "endpoint", "middleware", "serializer", "parser", "schema",
 }
 
+# A real PascalCase identifier has a lowercase run followed by ANOTHER
+# capital letter (e.g. "SessionCreated" -> Session + Created). A plain
+# capitalized English word like "How" or "The" does not. This distinguishes
+# the two so ordinary sentence-starting words never get treated as code
+# identifiers.
+_PASCAL_CASE = re.compile(r"^[A-Z][a-z]+[A-Z][a-zA-Z]*$")
+_CAMEL_CASE = re.compile(r"[a-z][A-Z]")
+
 
 @dataclass
 class QueryAnalysis:
@@ -83,15 +98,16 @@ class QueryAnalyzer:
     def extract_identifiers(self, query: str) -> List[str]:
         """
         Pull out anything that already looks like an identifier
-        (snake_case, camelCase, PascalCase, or dotted.path), plus generate
-        plausible identifier forms from multi-word technical phrases
-        found in the query (e.g. "user input" -> "user_input", "userInput").
+        (snake_case, camelCase, real PascalCase, or dotted.path), plus
+        generate plausible identifier forms from multi-word technical
+        phrases found in the query (e.g. "user input" -> "user_input",
+        "userInput").
         """
         identifiers = set()
 
         # Already identifier-shaped tokens in the raw text
         for tok in re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", query):
-            if "_" in tok or re.search(r"[a-z][A-Z]", tok) or re.match(r"^[A-Z][a-z]", tok):
+            if "_" in tok or _CAMEL_CASE.search(tok) or _PASCAL_CASE.match(tok):
                 identifiers.add(tok)
 
         # Guess identifier forms from adjacent *content* words (skip stopwords)
@@ -118,6 +134,7 @@ class QueryAnalyzer:
 if __name__ == "__main__":
     analyzer = QueryAnalyzer()
     test_queries = [
+        "How is a session created?",
         "how is the input validated before saving to the database",
         "where is the user authentication token generated",
         "why does the connection fail on retry",
