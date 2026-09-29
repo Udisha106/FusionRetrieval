@@ -119,7 +119,7 @@ if st.button("Search") and query.strip():
         st.markdown(f"- **{stage}:** {ms:.2f} ms")
     st.markdown(f"**Total: {total_latency:.2f} ms**")
 
-    st.caption(f"Chunks indexed: {len(chunks)}")
+    st.caption(f"Code chunks in index: {len(chunks)}")
 
 else:
     st.info("Enter a query above and click Search to see results.")
