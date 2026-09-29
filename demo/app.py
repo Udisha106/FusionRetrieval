@@ -24,7 +24,7 @@ from src.query.query_pipeline import QueryPipeline
 from src.retrieval.pipeline import RetrievalPipeline
 
 
-st.set_page_config(page_title="CodeLens", layout="wide")
+st.set_page_config(page_title="FusionRetrieval", layout="wide")
 
 
 @st.cache_resource
@@ -42,7 +42,7 @@ def load_pipelines():
 
 chunks, query_pipeline, retrieval_pipeline = load_pipelines()
 
-st.title("CodeLens")
+st.title("FusionRetrieval")
 st.caption("Ask about the codebase in plain English")
 
 query = st.text_input("Ask about the codebase:", placeholder="e.g. How is the input normalized before saving?")
