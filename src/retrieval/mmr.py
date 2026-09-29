@@ -1,33 +1,30 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
 
 
 class MMR:
 
-    def __init__(self, model=None):
-        self.model = model or SentenceTransformer(
-        "sentence-transformers/all-MiniLM-L6-v2"
-    )
+    def select(
+        self,
+        query,
+        results,
+        document_embeddings,
+        query_embedding,
+        top_k=10,
+        lambda_param=0.7
+    ):
 
-    def select(self, query, results, top_k=10, lambda_param=0.7):
+        if not results:
+            return []
 
-        documents = [
-            result["document"]
+        indices = [
+            result["index"]
             for result in results
         ]
 
-        query_embedding = self.model.encode(
-            [query],
-            normalize_embeddings=True
-        )[0]
-
-        document_embeddings = self.model.encode(
-            documents,
-            normalize_embeddings=True
-        )
+        candidate_embeddings = document_embeddings[indices]
 
         relevance_scores = np.dot(
-            document_embeddings,
+            candidate_embeddings,
             query_embedding
         )
 
@@ -37,12 +34,14 @@ class MMR:
         while remaining and len(selected) < top_k:
 
             if not selected:
+
                 best_index = max(
                     remaining,
                     key=lambda i: relevance_scores[i]
                 )
 
             else:
+
                 best_index = max(
                     remaining,
                     key=lambda i:
@@ -50,8 +49,8 @@ class MMR:
                     - (1 - lambda_param) *
                     max(
                         np.dot(
-                            document_embeddings[i],
-                            document_embeddings[j]
+                            candidate_embeddings[i],
+                            candidate_embeddings[j]
                         )
                         for j in selected
                     )

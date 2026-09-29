@@ -11,18 +11,23 @@ class Reranker:
 
     def rerank(self, query, results, top_k=20):
 
-        pairs = []
+        # Only rerank the candidates we actually need.
+        candidates = results[:top_k]
 
-        for result in results:
-            pairs.append(
-                [query, result["document"]]
-            )
+        pairs = [
+            [query, result["document"]]
+            for result in candidates
+        ]
 
-        scores = self.model.predict(pairs)
+        scores = self.model.predict(
+            pairs,
+            batch_size=32,
+            show_progress_bar=False
+        )
 
         reranked_results = []
 
-        for result, score in zip(results, scores):
+        for result, score in zip(candidates, scores):
             reranked_results.append({
                 "index": result["index"],
                 "score": float(score),
@@ -34,4 +39,4 @@ class Reranker:
             reverse=True
         )
 
-        return reranked_results[:top_k]
+        return reranked_results
