@@ -50,7 +50,7 @@ Requires Python 3.10 or higher.
 
 Clone the repository and install dependencies using these commands.
 
-git clone https colon slash slash github.com slash khyati-ctrl slash FusionRetrieval dot git
+git clone://github.com/khyati-ctrl/FusionRetrieval.git
 
 cd FusionRetrieval
 
