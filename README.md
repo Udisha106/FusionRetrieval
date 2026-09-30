@@ -132,7 +132,19 @@ python -m streamlit run demo/app.py
 
 This opens a browser UI where you can type a natural language question about the codebase and see the following. Query understanding, showing intent, entities, and identifiers. Vocabulary bridge, showing expanded query terms. HyDE, showing a hypothetical code snippet. Ranked retrieved code with scores. Evolution and lineage view, currently demoed on simulated version history, though the underlying pipeline works identically on real multi commit repos. Per stage latency breakdown.
 
+PROJECT RESOURCES 
 
+- Live Demo - https://fusionretrieval.streamlit.app
+- Project Presentation - https://docs.google.com/presentation/d/1pyeTn4LuIZ3_uQTWPzPQSanMuchxUJd9/edit?usp=sharing&ouid=102378650116289212530&rtpof=true&sd=true
+- Demo Video - https://drive.google.com/file/d/1C7eutuVBA-kw0j-eORhMixEZuKpIETXN/view?usp=sharing
+
+AI Disclosure
+
+AI tools were used during the development of FusionRetrieval for
+brainstorming, code assistance, debugging, and documentation.
+All AI-assisted outputs were reviewed, modified, tested, and integrated
+by the team. The final implementation and project decisions were made
+and validated by the team.
 
 TEAM
 
